@@ -1,4 +1,14 @@
 
+# ## alias
+
+echo "alias ll='ls -l'" >> ~/.bash_aliases
+echo "alias gitlog='git log --all --oneline --decorate --graph'" >> ~/.bash_aliases
+
+# Pour lancer un terminal : gnome-terminal
+# Pour ajouter le raccourci clavier d'ouverture d'un terminal :
+# https://www.hacking-tutorial.com/tips-and-trick/how-to-create-keyboard-shortcuts-on-kali-linux/#sthash.p5RC2RAq.jcbpvl9x.dpbs
+# Application (en haut à gauche), usual application (cliquer), system tools - preferences - settings - keyboard
+
 
 # ## clavier
 
@@ -28,21 +38,24 @@ sudo apt-get install sublime-text
 subl
 
 
-
 # ## Firefox
 
 # désactiver la pop-up à la con qui propose de sauvegarder un mot de passe.
 # https://developer.mozilla.org/fr/Firefox/deploiement_Entreprise
 # https://support.mozilla.org/en-US/questions/1158069
 
-# Pas encore testé !!
+# Ça marche pas bien, alors je met directement la config que je veux dans le fichier existant.
 
-echo "// commentaire obligatoire mais osef" >> /usr/lib/firefox-esr/defaults/pref/autoconfig.js
-echo "pref(\"general.config.filename\", \"mozilla.cfg\");" >> /usr/lib/firefox-esr/defaults/pref/autoconfig.js
-echo "pref(\"general.config.obscure_value\", 0);" >> /usr/lib/firefox-esr/defaults/pref/autoconfig.js
-
-echo "// commentaire obligatoire mais osef" >> /usr/lib/firefox-esr/defaults/pref/mozilla.cfg
-echo "lockPref(\"signon.rememberSignons\", false);" >> /usr/lib/firefox-esr/defaults/pref/mozilla.cfg
+echo "lockPref(\"signon.rememberSignons\", false);" >> /usr/lib/firefox-esr/defaults/pref/channel-prefs.js
 
 
+# ## Lib python
+
+apt-get -y install python3 python3-dev python3-pip git
+
+pip3 install --upgrade git+https://github.com/arthaud/python3-pwntools.git
+pip3 install python-twitter
+
+echo "alias python='python3'" >> ~/.bash_aliases
+echo "alias pip='pip3'" >> ~/.bash_aliases
 
