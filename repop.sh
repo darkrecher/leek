@@ -49,7 +49,7 @@ subl
 echo "lockPref(\"signon.rememberSignons\", false);" >> /usr/lib/firefox-esr/defaults/pref/channel-prefs.js
 
 
-# ## Lib python
+# ## Lib python, et test
 
 apt-get -y install python3 python3-dev python3-pip git
 
@@ -59,3 +59,14 @@ pip3 install python-twitter
 echo "alias python='python3'" >> ~/.bash_aliases
 echo "alias pip='pip3'" >> ~/.bash_aliases
 
+echo "print(\"coucou\")" >> test_python3.py
+echo "print(1 / 3)" >> test_python3.py
+echo "print(1 // 3)" >> test_python3.py
+python test_python3.py
+
+
+# ## Activation des alias
+
+. ~/.bash_aliases
+
+echo "C'est fait."
