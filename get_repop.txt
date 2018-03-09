@@ -1,3 +1,7 @@
+sexkbmap fr bepo
+
+passw {changer le mot de passe}
+
 curl "https://pastebin.com/raw/icvy7uXA" > repop.sh
 
 dos2unix repop.sh
@@ -8,3 +12,16 @@ cat repop.sh | sha1sum
 
 # f659562922c02ec8ef277f59cdbb346cdda9ee2a
 
+curl "https://pastebin.com/raw/Vjync6Cm" > doup.py
+
+dos2unix doup.py
+
+cat doup.py | sha1sum
+
+# 4c5f8c5585618119a35905901ed83fb8b2f457ce
+
+echo "DEFAULT_NAME = 'un truc'" > doup_conf.py
+
+echo -n "{le mot de passe}" > .doup_pass
+
+python doup.py do -t dqfXJ -pp .doup_pass

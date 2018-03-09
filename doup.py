@@ -54,6 +54,10 @@ def upload(doup_name, doup_files, pass_type, pass_text, pass_file):
 	print('')
 
 	print('Envoi d\'un twit pour conserver l\'url.')
+	try:
+		import twitter
+	except:
+		raise Exception("Fail. Il faut exécuter : pip3 install python-twitter")
 	print('TODO')
 
 
