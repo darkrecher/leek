@@ -1,0 +1,68 @@
+Pas besoin de se prendre la tête.
+ 
+https://transfer.sh
+ 
+curl --upload-file ./hackzor.zip https://transfer.sh/hackzor.zip
+ 
+ 
+http://tombuntu.com/index.php/2007/12/12/simple-file-encryption-with-openssl/
+ 
+openssl aes-256-cbc -a -salt -in secrets.txt -out secrets.txt.enc
+openssl aes-256-cbc -d -a -in secrets.txt.enc -out secrets.txt.new
+ 
+À tester, mais le "-a" ne sera peut-être pas nécessaire. (encoding base64, mais ça augmente la taille du fichier).
+ 
+ 
+ 
+## Scripts échange/respawn/etc
+ 
+### doup (download/upoad)
+ 
+Stocké dans /home/Documents/doup (avec un alias, évidemment)
+ 
+upload, avec l'option "drg" :
+ 
+ - prend tout ce qu'il y a dans $home/drmonrep/*
+ - copie récursive dans /tmp/doup_transfer (sauf les répertoire avec le mot `no_save` dedans, si jamais on a des fichiers énormes).
+ - tar.gz de /tmp/doup_transfer/*
+ - chiffrement ssl, soit avec un mot de passe prompté, soit avec le mot de passe indiqué dans /home/Documents/.doup_config.txt
+ - envoi à transfer.sh. récupération de l'url.
+ - publication du code dans l'url sur un compte twitter, avec l'indication "drg".
+ - suppression du contenu de /tmp/doup_transfer
+ 
+upload, sans l'option "drg"
+ 
+ - demande un identifiant de package (50 chars, pas plus, si on met "drg", ça se change en "not_drg")
+ - copie récursive du contenu du répertoire courant dans /tmp/doup_transfer (pas de filtrage).
+ - tar.gz de /tmp/doup_transfer/*
+ - chiffrement ssl. (prompt ou fichier).
+ - envoi à transfer.sh. récupération de l'url.
+ - publication du code dans l'url sur un compte twitter, avec l'indication indiquée au début.
+ - suppression du contenu de /tmp/doup_transfer
+ 
+download, avec une option facultative : {identifiant}. Si non spécifié : "drg"
+Le download doit être du pur python 3. Pas de lib exotique.
+ 
+ - si "drg", vérifie **l'absence** du répertoire $home/drmonrep. Exit si rep présent. Création si absent.
+ - si autre chose, vérifie l'absence du sous-répertoire {identifiant} dans le répertoire courant. Exit si présent. Création si absent.
+ - connexion à twitter (sans l'API twitter, en espérant que ce soit possible). Récupération du twit le plus récent ayant l'identifiant dans le texte.
+ - Récupération de l'url de transfer.sh
+ - Téléchargement du fichier dans /tmp/doup_transfer
+ - Déchiffrement ssl
+ - untar.gz. dans $home/drmonrep
+ - suppression du contenu de /tmp/doup_transfer
+ - message qui dit "coucou"
+ 
+### récupération doup
+ 
+Le script est dans un pastebin public.
+ 
+### initialisation kali
+ 
+clavier
+sublime text
+pip3 pour pwntools, twitter et peut-être d'autres trucs.
+python3 au lieu de python
+récupération du script doup
+exécution de ce script, download, sans l'option (donc "drg" par défaut).
+message pour dire qu'il faut penser à changer le mot de passe root.

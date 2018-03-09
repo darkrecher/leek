@@ -49,7 +49,7 @@ subl
 echo "lockPref(\"signon.rememberSignons\", false);" >> /usr/lib/firefox-esr/defaults/pref/channel-prefs.js
 
 
-# ## Lib python, et test
+# ## Lib python
 
 apt-get -y install python3 python3-dev python3-pip git
 
@@ -59,14 +59,23 @@ pip3 install python-twitter
 echo "alias python='python3'" >> ~/.bash_aliases
 echo "alias pip='pip3'" >> ~/.bash_aliases
 
-echo "print(\"coucou\")" >> test_python3.py
-echo "print(1 / 3)" >> test_python3.py
-echo "print(1 // 3)" >> test_python3.py
-python test_python3.py
 
-
-# ## Activation des alias
+# ## Activation des alias, test python
 
 . ~/.bash_aliases
 
+echo "print(\"coucou\")" >> test_python3.py
+echo "print(1 / 3)" >> test_python3.py
+echo "print(1 // 3)" >> test_python3.py
+
+python test_python3.py
+
+
+# ## récupération de bazars
+
+curl "https://pastebin.com/raw/zkL0XqDZ" > script_save_specs.txt
+dos2unix script_save_specs.txt
+
 echo "C'est fait."
+echo "Il faut changer le mot de passe root"
+echo "puis télécharger tout ce qu'il y a ici : https://drop.trinaps.com/4fc751c3"
