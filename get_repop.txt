@@ -1,0 +1,10 @@
+curl "https://pastebin.com/raw/icvy7uXA" > repop.sh
+
+dos2unix repop.sh
+
+chmod 777 repop.sh
+
+cat repop.sh | sha1sum
+
+# f659562922c02ec8ef277f59cdbb346cdda9ee2a
+
