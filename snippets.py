@@ -16,7 +16,10 @@ def write_file(pathfile, value):
 
 
 
-(pl_guess, pl_int, pl_hex, pl_hexu, pl_hexl, pl_asc, pl_ut8, pl_lint, pl_lasc, pl_lut8, pl_all) = range(11)
+(
+	pl_guess, pl_int, pl_hex, pl_hexu, pl_hexl, pl_hexu_space, pl_hexl_space, pl_asc, pl_ut8,
+	pl_lint, pl_lasc, pl_lut8, pl_asc_lint, pl_asc_lhex, pl_all
+) = range(15)
 
 
 def _asc_to_lint(data):
@@ -50,27 +53,46 @@ def _hex_to_lint(data):
 		in hex_digits ]
 	return list(lint)
 
+def _asc_lint_to_lint(asc_lint):
+	asc_lint = asc_lint.translate(str.maketrans(",.-_;", "     "))
+	asc_lint_splitted = asc_lint.split()
+	return list([int(elem) for elem in asc_lint_splitted])
+
+def _asc_lhex_to_lint(asc_lhex):
+	asc_lhex = asc_lhex.translate(str.maketrans(",.-_;", "     "))
+	asc_lhex_splitted = asc_lhex.split()
+	return list([int(elem, 16) for elem in asc_lhex_splitted])
+
 
 def _lint_to_int(lint):
 	big_int = 0
-	for cur_int in lint[::-1]:
+	for cur_int in lint:
 		big_int *= 256
 		big_int += cur_int
 	return str(big_int)
 
-def _lint_to_hexu(lint):
-	hexus = [
-		hex(cur_int).upper()[2:]
+def _lint_to_lhex(lint):
+	lhex = [
+		hex(cur_int)[2:].rjust(2, '0')
 		for cur_int in lint
 	]
-	return ''.join(hexus)
+	return lhex
+
+def _lint_to_hexu(lint):
+	lhex = _lint_to_lhex(lint)
+	return ''.join(lhex).upper()
 
 def _lint_to_hexl(lint):
-	hexls = [
-		hex(cur_int)[2:]
-		for cur_int in lint
-	]
-	return ''.join(hexls)
+	lhex = _lint_to_lhex(lint)
+	return ''.join(lhex).lower()
+
+def _lint_to_hexu_space(lint):
+	lhex = _lint_to_lhex(lint)
+	return ' '.join(lhex).upper()
+
+def _lint_to_hexl_space(lint):
+	lhex = _lint_to_lhex(lint)
+	return ' '.join(lhex).lower()
 
 def _lint_to_asc(lint):
 	return str((bytes(lint)).decode("ascii", "replace"))
@@ -89,18 +111,22 @@ DICT_FUNCTION_IN_FROM_PL_TYPE = {
 	pl_lint: lambda data: data,
 	pl_lasc: _lasc_to_lint,
 	pl_lut8: _lut8_to_lint,
+	pl_asc_lint: _asc_lint_to_lint,
+	pl_asc_lhex: _asc_lhex_to_lint,
 }
 
 DICT_FUNCTION_OUT_FROM_PL_TYPE = {
 	pl_int: ('entier', _lint_to_int),
 	pl_hexu: ('hexa upcase', _lint_to_hexu),
 	pl_hexl: ('hexa lowcase', _lint_to_hexl),
+	pl_hexu_space: ('hexa-space upcase', _lint_to_hexu_space),
+	pl_hexl_space: ('hexa-space lowcase', _lint_to_hexl_space),
 	pl_asc: ('str ascii', _lint_to_asc),
 	pl_ut8: ('str utf-8', _lint_to_ut8),
 	pl_lint: ('liste entier', lambda data: str(data)),
 }
 
-PL_TYPES_FOR_PL_ALL = (pl_int, pl_lint, pl_hexu, pl_hexl, pl_asc, pl_ut8)
+PL_TYPES_FOR_PL_ALL = (pl_int, pl_lint, pl_hexu, pl_hexl, pl_hexu_space, pl_hexl_space, pl_asc, pl_ut8)
 
 label_length_max = max([
 	len(value[0])
@@ -113,11 +139,45 @@ def _only_allowed_chars(str_data, allowed_chars):
 	unauthorized_chars = set(str_data) - set(allowed_chars)
 	return not bool(unauthorized_chars)
 
+def _guess(data):
+	if isinstance(data, (list, tuple)):
+		if all([ isinstance(elem, int) for elem in data ]):
+			return pl_lint
+		if all([ isinstance(elem, str) for elem in data ]):
+			data = ''.join(data)
+			# Pas de détection d'encodage. C'est ascii ou utf-8. Tant pis si ça pète après.
+			try:
+				data.encode('ascii')
+				return pl_lasc
+			except:
+				return pl_lut8
 
-def plop(data, pl_type_in=pl_guess, pl_type_out=pl_all):
+	if isinstance(data, str):
+		if _only_allowed_chars(data, '0123456789abcdefABCDEF'):
+			return pl_hex
+		if _only_allowed_chars(data, ',.-_;0123456789 '):
+			return pl_asc_lint
+		if _only_allowed_chars(data, ',.-_;0123456789 abcdefABCDEF'):
+			return pl_asc_lhex
+		# Toujours pas de détection d'encodage
+		try:
+			data.encode('ascii')
+			return pl_asc
+		except:
+			return pl_ut8
+
+	if isinstance(data, int):
+		return pl_int
+
+	return None
+
+
+def plop(data, pl_type_out=pl_all, pl_type_in=pl_guess):
 
 	if pl_type_in == pl_guess:
-		raise NotImplemented("TODO")
+		pl_type_in = _guess(data)
+	if pl_type_in is None:
+		raise Exception("Fail guess")
 	function_in = DICT_FUNCTION_IN_FROM_PL_TYPE.get(pl_type_in)
 	if pl_type_in is None:
 		raise Exception("Fail arguments pl_type_in")
@@ -140,3 +200,28 @@ def plop(data, pl_type_in=pl_guess, pl_type_out=pl_all):
 		function_out = out_infos[1]
 		return function_out(lint)
 
+
+if __name__ == '__main__':
+
+	plop(123456)
+	print('-' * 10)
+	plop('deadBEEF')
+	print('-' * 10)
+	plop('tralala;$_pouet')
+	print('-' * 10)
+	plop('abcdéèê')
+	print('-' * 10)
+	plop('αβ')
+	print('-' * 10)
+	plop(list(range(41)))
+	print('-' * 10)
+	plop(('a', 'b', 'c'))
+	print('-' * 10)
+	plop(('é', 'è', 'ñ'))
+	print('-' * 10)
+
+	print(plop('deadbeef', pl_lint, pl_hex))
+	print('-' * 10)
+
+	# Bof... Mais on n'a pas besoin de ça.
+	plop('a1,b2,100')
