@@ -21,6 +21,9 @@ parser.add_argument(
 parser.add_argument(
 	'-f', metavar='files', action='store', required=False,
 	help='Fichiers ou répertoire à mettre dans le doub. (Même format que l\'argument d\'un tar.gz.)')
+parser.add_argument(
+	'-t', metavar='transfer_id', action='store', required=False,
+	help='identifiant du fichier sur transfer.sh. (Par exemple : "D84JU" pour "https://transfer.sh/D84JU/doup.tar.gz.enc"')
 
 
 def upload(doup_name, doup_files, pass_type, pass_text, pass_file):
@@ -30,12 +33,17 @@ def upload(doup_name, doup_files, pass_type, pass_text, pass_file):
 
 	call(['tar', '-zcvf', 'doup.tar.gz', doup_files])
 
+	if pass_type == 'pass_from_cmd_line':
+		pass_argument = 'pass:' + pass_text
+	else:
+		pass_argument = 'file:' + pass_file
+
 	# https://superuser.com/questions/724986/how-to-use-password-argument-in-via-command-line-to-openssl-for-decryption
 	call([
 		'openssl',
 		'aes-256-cbc', '-salt', '-in', 'doup.tar.gz',
 		'-out', 'doup.tar.gz.enc',
-		'-pass', 'pass:machin_bidule'])
+		'-pass', pass_argument])
 
 	print('envoi du fichier.')
 	print('')
@@ -49,18 +57,28 @@ def upload(doup_name, doup_files, pass_type, pass_text, pass_file):
 	print('TODO')
 
 
-def download(pastebin_id, pass_type, pass_text, pass_file):
+def download(transfer_id, pass_type, pass_text, pass_file):
 
-	# rm doup.tar.gz
-	# rm doup.tar.gz.enc
+	call(['rm', 'doup.tar.gz'])
+	call(['rm', 'doup.tar.gz.enc'])
+
+	url_download = 'https://transfer.sh/%s/doup.tar.gz.enc' % transfer_id
+
+	with open('doup.tar.gz.enc', 'w') as doup_file:
+		call(['curl', url_download], stdout=doup_file)
+
+	if pass_type == 'pass_from_cmd_line':
+		pass_argument = 'pass:' + pass_text
+	else:
+		pass_argument = 'file:' + pass_file
 
 	call([
 		'openssl',
 		'aes-256-cbc', '-d', '-salt', '-in', 'doup.tar.gz.enc',
 		'-out', 'doup.tar.gz',
-		'-pass', 'pass:machin_bidule'])
+		'-pass', pass_argument])
 
-	# tar -zxvf doup.tar.gz
+	call(['tar', '-zxvf', 'doup.tar.gz'])
 
 
 def main():
@@ -83,7 +101,10 @@ def main():
 		upload(doup_name, doup_files, pass_type, pass_text, pass_file)
 
 	else:
-		raise NotImplemented("TODO")
+		transfer_id = args.t
+		if transfer_id is None:
+			raise Exception("Le paramètre -u est obligatoire pour un download.")
+		download(transfer_id, pass_type, pass_text, pass_file)
 
 
 if __name__ == '__main__':
