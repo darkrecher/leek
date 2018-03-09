@@ -100,13 +100,19 @@ DICT_FUNCTION_OUT_FROM_PL_TYPE = {
 	pl_lint: ('liste entier', lambda data: str(data)),
 }
 
+PL_TYPES_FOR_PL_ALL = (pl_int, pl_lint, pl_hexu, pl_hexl, pl_asc, pl_ut8)
+
 label_length_max = max([
 	len(value[0])
 	for key, value
 	in DICT_FUNCTION_OUT_FROM_PL_TYPE.items()
 ])
 
-print("TODO debug :", label_length_max)
+
+def _only_allowed_chars(str_data, allowed_chars):
+	unauthorized_chars = set(str_data) - set(allowed_chars)
+	return not bool(unauthorized_chars)
+
 
 def plop(data, pl_type_in=pl_guess, pl_type_out=pl_all):
 
@@ -118,10 +124,19 @@ def plop(data, pl_type_in=pl_guess, pl_type_out=pl_all):
 	lint = function_in(data)
 
 	if pl_type_out == pl_all:
-		raise NotImplemented("TODO")
-	out_infos = DICT_FUNCTION_OUT_FROM_PL_TYPE.get(pl_type_out)
-	if out_infos is None:
-		raise Exception("Fail arguments pl_type_out")
-	function_out = out_infos[1]
-	return function_out(lint)
+		print('')
+		for pl_type_out_current in PL_TYPES_FOR_PL_ALL:
+			label, function_out = DICT_FUNCTION_OUT_FROM_PL_TYPE[pl_type_out_current]
+			try:
+				print('%s : %s' % (label.ljust(label_length_max), function_out(lint)))
+			except:
+				print('%s : %s' % (label.ljust(label_length_max), 'fail'))
+			print('')
+
+	else:
+		out_infos = DICT_FUNCTION_OUT_FROM_PL_TYPE.get(pl_type_out)
+		if out_infos is None:
+			raise Exception("Fail arguments pl_type_out")
+		function_out = out_infos[1]
+		return function_out(lint)
 
