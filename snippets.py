@@ -201,6 +201,39 @@ def plop(data, pl_type_out=pl_all, pl_type_in=pl_guess):
 		return function_out(lint)
 
 
+# snippets de code pour faire du ssh et du snmp à travers un rebond ssh.
+
+#	def start_ssh():
+#		self.ssh_client = paramiko.SSHClient()
+#		self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#		# https://docs.python.org/2/library/getpass.html
+#		password = getpass.getpass('Veuillez entrer le mot de passe pour la connexion SSH : ')
+#		self.ssh_client.connect(ip, port=port, username=username, password=password)
+#
+#	def config(
+#		self, version='v2c', community='NAGIOS', walker_ip='194.199.57.51', walker_port=50161,
+#		oid_prefix_in='1.3.6.1.4.1.42229.6.22.', line_prefix_out='SNMPv2-SMI::enterprises.42229.6.22.'
+#	):
+#		"""
+#		Le oid_prefix_in doit se terminer par un '.', sinon ça ne marche pas.
+#		Le line_prefix_out doit correspondre à l'oid_prefix_in.
+#		"""
+#		self.version = version
+#		self.community = community
+#		self.walker_ip = walker_ip
+#		self.walker_port = walker_port
+#		self.oid_prefix_in = oid_prefix_in
+#		self.line_prefix_out = line_prefix_out
+#		param_commands = (self.version, self.community, self.walker_ip, str(self.walker_port))
+#		self._walk_commmand = 'snmpwalk -%s -c %s %s:%s ' % param_commands
+#		self._get_commmand = 'snmpget -%s -c %s %s:%s ' % param_commands
+#		self._set_commmand = 'snmpset -%s -c %s %s:%s ' % param_commands
+#
+#	def test(self):
+#		stdin, stdout, stderr = self.ssh_client.exec_command('ls -l')
+#		logger.info(''.join(stdout))
+
+
 if __name__ == '__main__':
 
 	plop(123456)
